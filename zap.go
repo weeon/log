@@ -90,7 +90,6 @@ func (tlog *Logger) EnableDailyFile() {
 	tlog.rolling = true
 }
 
-
 func (tlog *Logger) Error(v ...interface{}) {
 	tlog.checkRotate()
 	if !tlog.level.Enabled(zap.ErrorLevel) {
@@ -202,14 +201,6 @@ func (tlog *Logger) Debugw(format string, v ...interface{}) {
 }
 
 var _logger *Logger
-
-func GetDefault() *Logger {
-	return _logger
-}
-
-func SetDefault(l *Logger) {
-	_logger = l
-}
 
 func Stdout() {
 	l, _ := NewLogger("stdout", zapcore.DebugLevel)
