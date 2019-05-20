@@ -49,6 +49,7 @@ func NewLogger(path string, level zapcore.Level) (*Logger, error) {
 	// config encoder config
 	ec := zap.NewProductionEncoderConfig()
 	ec.EncodeLevel = zapcore.CapitalLevelEncoder
+	ec.TimeKey = "@timestamp"
 	ec.EncodeTime = zapcore.ISO8601TimeEncoder
 
 	// config core
