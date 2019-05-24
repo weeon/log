@@ -91,6 +91,10 @@ func (tlog *Logger) EnableDailyFile() {
 	tlog.rolling = true
 }
 
+func (tlog *Logger) GetZapLogger() *zap.Logger {
+	return tlog.log
+}
+
 func (tlog *Logger) Error(v ...interface{}) {
 	tlog.checkRotate()
 	if !tlog.level.Enabled(zap.ErrorLevel) {
