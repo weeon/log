@@ -27,3 +27,12 @@ func FastInitFileLogger() {
 		_logger = l
 	}
 }
+
+func SetupStdoutLogger() {
+	l, err := NewLogger("stdout", zap.DebugLevel)
+	if err != nil {
+		fmt.Println("Init stdout error ", err)
+	} else {
+		_logger = l
+	}
+}
