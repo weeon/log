@@ -2,7 +2,6 @@ package log
 
 import (
 	"fmt"
-
 	"github.com/weeon/contract"
 	"go.uber.org/zap"
 )
@@ -29,7 +28,7 @@ func FastInitFileLogger() {
 }
 
 func SetupStdoutLogger() {
-	l, err := NewLogger("stdout", zap.DebugLevel)
+	l, err := NewLogger("/dev/stdout", zap.DebugLevel)
 	if err != nil {
 		fmt.Println("Init stdout error ", err)
 	} else {
