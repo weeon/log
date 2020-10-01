@@ -40,7 +40,7 @@ type Opt struct {
 
 type LoggerOpt func(opt *Opt)
 
-func SetWritersOpt(ws ...zapcore.WriteSyncer) LoggerOpt {
+func AddWritersOpt(ws ...zapcore.WriteSyncer) LoggerOpt {
 	return func(opt *Opt) {
 		opt.writers = ws
 	}
