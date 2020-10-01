@@ -28,11 +28,52 @@ type Logger struct {
 	rolling        bool
 	lastRotateTime time.Time
 	lastRotateRW   sync.Mutex
+
+	opt *Opt
 }
 
-func NewLogger(path string, level zapcore.Level) (*Logger, error) {
+type Opt struct {
+	disableFile        bool
+	service, namespace string
+	writers            []zapcore.WriteSyncer
+}
+
+type LoggerOpt func(opt *Opt)
+
+func SetWritersOpt(ws ...zapcore.WriteSyncer) LoggerOpt {
+	return func(opt *Opt) {
+		opt.writers = ws
+	}
+}
+
+func SetServiceOpt(service string) LoggerOpt {
+	return func(opt *Opt) {
+		opt.service = service
+	}
+}
+
+func SetNamespaceOpt(ns string) LoggerOpt {
+	return func(opt *Opt) {
+		opt.namespace = ns
+	}
+}
+
+func DisableOpt() LoggerOpt {
+	return func(opt *Opt) {
+		opt.disableFile = true
+	}
+}
+
+func NewLogger(path string, level zapcore.Level, opts ...LoggerOpt) (*Logger, error) {
 	out := new(Logger)
 	out.rlog = new(lumberjack.Logger)
+
+	opt := new(Opt)
+	for _, fn := range opts {
+		fn(opt)
+	}
+
+	out.opt = opt
 
 	out.path = path
 	out.lastRotateTime = time.Now()
@@ -54,13 +95,24 @@ func NewLogger(path string, level zapcore.Level) (*Logger, error) {
 
 	// config core
 	c := zapcore.AddSync(out.rlog)
+
 	core := zapcore.NewCore(zapcore.NewJSONEncoder(ec), c, out.level)
+
+	if len(opt.writers) != 0 {
+		cs := []zapcore.Core{core}
+		for _, w := range opt.writers {
+			cr := zapcore.NewCore(zapcore.NewJSONEncoder(ec), w, out.level)
+			cs = append(cs, cr)
+		}
+		core = zapcore.NewTee(cs...)
+	}
+
 	out.log = zap.New(
 		core,
 		zap.AddCaller(),
 		zap.AddCallerSkip(2),
-	)
-	// With(zap.Int("pid", env.Pid))
+	).
+		With(zap.String("service", opt.service), zap.String("namespace", opt.namespace))
 
 	// default enable daily rotate
 	out.rolling = true
