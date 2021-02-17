@@ -1,7 +1,8 @@
 package log
 
 import (
-	"github.com/go-redis/redis/v7"
+	"context"
+	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -21,7 +22,7 @@ func NewRedisWriter(key string, cli *redis.Client) *RedisWriter {
 }
 
 func (w *RedisWriter) Write(p []byte) (int, error) {
-	n, err := w.cli.RPush(w.listKey, p).Result()
+	n, err := w.cli.RPush(context.Background(), w.listKey, p).Result()
 	return int(n), err
 }
 
