@@ -10,7 +10,7 @@ format:
     image: golang
     stage: test
     script:
-      - go test -v ./...
+      - go fmt ./...
 test:
     image: golang
     stage: test
