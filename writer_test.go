@@ -1,9 +1,13 @@
 package log
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestNats(t *testing.T) {
-	NatsWriter := NewNatsWriter("nats://localhost:4222", "test")
+	natsURI := os.Getenv("NATS_URI")
+	NatsWriter := NewNatsWriter(natsURI, "test")
 	i, err := NatsWriter.Write([]byte("test"))
 	if err != nil {
 		t.Error(err)

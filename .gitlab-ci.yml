@@ -3,8 +3,19 @@ image: golang
 stages:
     - test
 
+variables:
+  NATS_URI: nats://nats:4222
+
 format:
+    image: golang
     stage: test
+    script:
+      - go test -v ./...
+test:
+    image: golang
+    stage: test
+    services:
+      - nats
     script:
       - go test -v ./...
 
