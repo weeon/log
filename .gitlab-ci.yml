@@ -6,14 +6,20 @@ stages:
 variables:
   NATS_URI: nats://nats:4222
 
-format:
+.test:
     image: golang
     stage: test
+    before_script:
+      - go mod download
+
+
+format:
+    extends: .test
     script:
       - go fmt ./...
+
 test:
-    image: golang
-    stage: test
+    extends: .test
     services:
       - nats
     script:
