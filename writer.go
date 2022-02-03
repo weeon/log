@@ -2,6 +2,7 @@ package log
 
 import (
 	"context"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/nats-io/nats.go"
 	"go.uber.org/zap/zapcore"
@@ -12,18 +13,18 @@ var (
 )
 
 type RedisWriter struct {
-	cli     *redis.Client
-	listKey string
+	cli *redis.Client
+	key string
 }
 
 func NewRedisWriter(key string, cli *redis.Client) *RedisWriter {
 	return &RedisWriter{
-		cli: cli, listKey: key,
+		cli: cli, key: key,
 	}
 }
 
 func (w *RedisWriter) Write(p []byte) (int, error) {
-	n, err := w.cli.RPush(context.Background(), w.listKey, p).Result()
+	n, err := w.cli.Publish(context.Background(), w.key, p).Result()
 	return int(n), err
 }
 
