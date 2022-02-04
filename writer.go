@@ -2,6 +2,7 @@ package log
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/nats-io/nats.go"
@@ -25,6 +26,9 @@ func NewRedisWriter(key string, cli *redis.Client) *RedisWriter {
 
 func (w *RedisWriter) Write(p []byte) (int, error) {
 	n, err := w.cli.Publish(context.Background(), w.key, p).Result()
+	if err != nil {
+		fmt.Println("log redis publish error:", err)
+	}
 	return int(n), err
 }
 
